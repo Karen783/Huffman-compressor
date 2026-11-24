@@ -1,21 +1,17 @@
-#include <stdlib.h>
 #include "compressor.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-struct frecuencias
-{
-    int frecuencia;
-    char letra;
-};
-
-fr *calcularFrecuencias()
+fr *calcularFrecuencias(int *total_out)
 {
     int letra, total = 0, capacidad = 4;
     fr *array = malloc(sizeof(fr) * capacidad);
+    
     if (array == NULL)
     {
-        printf("Upsi dupsi \n");
+        if (total_out != NULL)
+            *total_out = 0;
+        return NULL;
     }
 
     while ((letra = getchar()) != '\n' && letra != EOF)
@@ -23,7 +19,7 @@ fr *calcularFrecuencias()
         int pos = -1;
         for (int i = 0; i < total; i++)
         {
-            if (array[i].letra == letra)
+            if (array[i].letra == (char)letra)
             {
                 pos = i;
                 break;
@@ -34,21 +30,31 @@ fr *calcularFrecuencias()
         {
             array[pos].frecuencia++;
         }
-
         else
         {
             if (total == capacidad)
             {
                 capacidad *= 2; // duplicar el tamaño :)
-                array = realloc(array, capacidad * sizeof(fr));
+                fr *temp = realloc(array, capacidad * sizeof(fr));
+                if (temp == NULL)
+                {
+                    free(array);
+                    if (total_out != NULL)
+                        *total_out = 0;
+                    return NULL;
+                }
+                array = temp;
             }
-            array[total].letra = letra;
+            array[total].letra = (char)letra;
             array[total].frecuencia = 1;
             total++;
         }
     }
-    for (int i = 0; i < total; i++)
+
+    if (total_out != NULL)
     {
-        printf("%c %d\n", array[i].letra, array[i].frecuencia);
+        *total_out = total;
     }
+
+    return array;
 }

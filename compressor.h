@@ -1,9 +1,12 @@
 #ifndef COMPRESSOR_H_
 #define COMPRESSOR_H_
 
-typedef struct frecuencias fr;
+typedef struct frecuencias {
+    int frecuencia;
+    char letra;
+} fr;
 
-fr *calcularFrecuencias();
+fr *calcularFrecuencias(int *total_out);
 
-
-#endif 
+#endif
+ 

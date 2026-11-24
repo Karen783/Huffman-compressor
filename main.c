@@ -7,6 +7,20 @@
 
 int main()
 {
-    calcularFrecuencias();
+    int total = 0;
+    fr *tabla = calcularFrecuencias(&total);
+
+    if (tabla == NULL && total > 0)
+    {
+        fprintf(stderr, "Error al asignar memoria.\n");
+        return 1;
+    }
+
+    for (int i = 0; i < total; i++)
+    {
+        printf("%c: %d\n", tabla[i].letra, tabla[i].frecuencia);
+    }
+
+    free(tabla);
     return 0;
 }
