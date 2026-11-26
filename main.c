@@ -28,10 +28,11 @@ char *leer_entrada(void)
             }
             buffer = temp;
         }
-        buffer[longitud++] = (char)c;
+        *(buffer + longitud) = (char)c;
+        longitud++;
     }
 
-    buffer[longitud] = '\0';
+    *(buffer + longitud) = '\0';
     return buffer;
 }
 
@@ -47,9 +48,9 @@ fr *crear_tabla_frecuencias(const char *oracion, int *total_out)
         return NULL;
     }
 
-    for (int i = 0; oracion[i] != '\0'; i++)
+    for (int i = 0; *(oracion + i) != '\0'; i++)
     {
-        char letra = oracion[i];
+        char letra = *(oracion + i);
 
         int pos = -1;
         for (int j = 0; j < total; j++)
@@ -137,7 +138,18 @@ int main()
 
     nodo *raiz = crear_arbol(tabla, total);
 
+    printf("Recorrido preorden del arbol:\n");
     imprimir_arbol(raiz);
+    printf("\n\n");
+
+    generar_codigos(raiz, tabla, total);
+    printf("--- Tabla de Huffman (Frecuencias y Codigos) ---\n");
+    imprimir_tabla(tabla, total);
+
+    liberar_arbol(raiz);
+    liberar_tabla(tabla, total);
+    free((char *)oracion);
+    free(tabla);
 
     return 0;
 }

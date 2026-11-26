@@ -1,4 +1,5 @@
 #include "compressor.h"
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,12 +16,6 @@ struct min_heap
     nodo **datos;  // arreglo de punteros a nodos
     int total;     // cuántos nodos hay ahora
     int capacidad; // cuántos caben
-};
-
-struct diccionario
-{
-    char key;
-    char *binario;
 };
 
 int insertar(heap *h, nodo *n)
@@ -169,8 +164,7 @@ void imprimir_arbol(nodo *n)
 {
     if (n == NULL)
         return;
-    if (n->izquierda == NULL && n->derecho == NULL)
-        printf("(%c:%d) ", n->letra, n->frecuencia);
+    printf("(%c:%d) ", n->letra, n->frecuencia);
     imprimir_arbol(n->izquierda);
     imprimir_arbol(n->derecho);
 }
@@ -184,17 +178,80 @@ void liberar_arbol(nodo *n)
     free(n);
 }
 
-int recorrer(nodo *n, char *codigo, int profundidad, dic *tabla, int cuenta)
+static void asignar_codigo(fr *tabla, int total, char letra, const char *codigo)
+{
+    for (int i = 0; i < total; i++)
+    {
+        if ((tabla + i)->letra == letra)
+        {
+            size_t len = strlen(codigo);
+            (tabla + i)->codigo_binario = malloc(len + 1);
+            if ((tabla + i)->codigo_binario != NULL)
+            {
+                strcpy((tabla + i)->codigo_binario, codigo);
+            }
+            break;
+        }
+    }
+}
+
+static void recorrer(nodo *n, char *codigo, int profundidad, fr *tabla, int total)
 {
     if (n == NULL)
-        return cuenta;
+        return;
 
+    // Si es un nodo hoja
     if (n->izquierda == NULL && n->derecho == NULL)
-        return cuenta + 1;
+    {
+        *(codigo + profundidad) = '\0';
+        asignar_codigo(tabla, total, n->letra, codigo);
+        return;
+    }
 
-    codigo[profundidad] = '0';
-    cuenta = recorrer(n->izquierda, codigo, profundidad + 1, tabla, cuenta);
-    codigo[profundidad] = '1';
-    cuenta = recorrer(n->derecho, codigo, profundidad + 1, tabla, cuenta);
-    return cuenta;
+    *(codigo + profundidad) = '0';
+    recorrer(n->izquierda, codigo, profundidad + 1, tabla, total);
+    *(codigo + profundidad) = '1';
+    recorrer(n->derecho, codigo, profundidad + 1, tabla, total);
+}
+
+void generar_codigos(nodo *raiz, fr *tabla, int total)
+{
+    if (raiz == NULL || tabla == NULL || total <= 0)
+        return;
+
+    char *codigo = malloc(total + 2);
+    if (codigo == NULL)
+        return;
+
+    recorrer(raiz, codigo, 0, tabla, total);
+
+    free(codigo);
+}
+
+void imprimir_tabla(fr *tabla, int total)
+{
+    if (tabla == NULL)
+        return;
+
+    for (int i = 0; i < total; i++)
+    {
+        char c = (tabla + i)->letra;
+        const char *bin = (tabla + i)->codigo_binario ? (tabla + i)->codigo_binario : "";
+        printf("'%c'| frec: %d | bin: %s\n", c, (tabla + i)->frecuencia, bin);
+    }
+}
+
+void liberar_tabla(fr *tabla, int total)
+{
+    if (tabla == NULL)
+        return;
+
+    for (int i = 0; i < total; i++)
+    {
+        if ((tabla + i)->codigo_binario != NULL)
+        {
+            free((tabla + i)->codigo_binario);
+        }
+    }
+    free(tabla);
 }

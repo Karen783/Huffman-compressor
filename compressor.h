@@ -9,11 +9,8 @@ typedef struct frecuencias
 {
     int frecuencia;
     char letra;
+    char *codigo_binario;
 } fr;
-
-typedef struct diccionario dic;
-
-int recorrer(nodo *n, char *codigo, int profundidad, dic *tabla, int cuenta);
 
 nodo *crear_hoja(char letra, int frecuencia);
 
@@ -33,4 +30,11 @@ void imprimir_arbol(nodo *n);
 
 void liberar_arbol(nodo *n);
 
+void generar_codigos(nodo *raiz, fr *tabla, int total);
+
+void imprimir_tabla(fr *tabla, int total);
+
+void liberar_tabla(fr *tabla, int total);
+
 #endif
+
