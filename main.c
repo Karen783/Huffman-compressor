@@ -1,13 +1,43 @@
 #include "compressor.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Línea para compilar: gcc main.c compressor.c -o main
 // Línea para ejecutar: ./main
 
-fr *calcularFrecuencias(int *total_out)
+char *leer_entrada(void)
 {
-    int letra, total = 0, capacidad = 4;
+    size_t capacidad = 16;
+    size_t longitud = 0;
+    char *buffer = malloc(capacidad);
+    if (buffer == NULL)
+        return NULL;
+
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
+        if (longitud + 1 >= capacidad) // deja espacio para el '\0'
+        {
+            capacidad += 2;
+            char *temp = realloc(buffer, capacidad);
+            if (temp == NULL)
+            {
+                free(buffer);
+                return NULL;
+            }
+            buffer = temp;
+        }
+        buffer[longitud++] = (char)c;
+    }
+
+    buffer[longitud] = '\0';
+    return buffer;
+}
+
+fr *crear_tabla_frecuencias(const char *oracion, int *total_out)
+{
+    int total = 0, capacidad = 4;
     fr *array = malloc(sizeof(fr) * capacidad);
 
     if (array == NULL)
@@ -17,15 +47,16 @@ fr *calcularFrecuencias(int *total_out)
         return NULL;
     }
 
-    printf("Ingresa la oracion: ");
-    while ((letra = getchar()) != '\n' && letra != EOF)
+    for (int i = 0; oracion[i] != '\0'; i++)
     {
+        char letra = oracion[i];
+
         int pos = -1;
-        for (int i = 0; i < total; i++)
+        for (int j = 0; j < total; j++)
         {
-            if ((array + i)->letra == (char)letra)
+            if ((array + j)->letra == letra)
             {
-                pos = i;
+                pos = j;
                 break;
             }
         }
@@ -38,7 +69,7 @@ fr *calcularFrecuencias(int *total_out)
         {
             if (total == capacidad)
             {
-                capacidad += 3; // Aumentar el tamaño en 3
+                capacidad += 3;
                 fr *temp = realloc(array, capacidad * sizeof(fr));
                 if (temp == NULL)
                 {
@@ -49,21 +80,18 @@ fr *calcularFrecuencias(int *total_out)
                 }
                 array = temp;
             }
-            (array + total)->letra = (char)letra;
+            (array + total)->letra = letra;
             (array + total)->frecuencia = 1;
             total++;
         }
     }
 
     if (total_out != NULL)
-    {
         *total_out = total;
-    }
-
     return array;
 }
 
-void ordenarFrecuencias(fr *array, int total)
+void ordenar_frecuencias(fr *array, int total)
 {
     for (int i = 0; i < total; i++)
     {
@@ -87,8 +115,17 @@ void ordenarFrecuencias(fr *array, int total)
 
 int main()
 {
+
+    printf("Ingresa la oracion: ");
+    const char *oracion = leer_entrada();
+    if (oracion == NULL)
+    {
+        printf("Error al asignar memoria.\n");
+        return 1;
+    }
+
     int total = 0;
-    fr *tabla = calcularFrecuencias(&total);
+    fr *tabla = crear_tabla_frecuencias(oracion, &total);
 
     if (tabla == NULL && total > 0)
     {
@@ -96,14 +133,11 @@ int main()
         return -1;
     }
 
-    ordenarFrecuencias(tabla, total);
-    
-    nodo *raiz = crear_arbol(tabla, total);
-    printf("Recorrido preorden del arbol:\n");
-    imprimir_arbol(raiz);
-    printf("\n");
+    ordenar_frecuencias(tabla, total);
 
-    liberar_arbol(raiz);
-    free(tabla);
+    nodo *raiz = crear_arbol(tabla, total);
+
+    imprimir_arbol(raiz);
+
     return 0;
 }
