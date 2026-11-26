@@ -17,6 +17,7 @@ fr *calcularFrecuencias(int *total_out)
         return NULL;
     }
 
+    printf("Ingresa la oracion: ");
     while ((letra = getchar()) != '\n' && letra != EOF)
     {
         int pos = -1;
@@ -98,7 +99,7 @@ int main()
     ordenarFrecuencias(tabla, total);
     
     nodo *raiz = crear_arbol(tabla, total);
-    printf("Recorrido inorder del arbol:\n");
+    printf("Recorrido preorden del arbol:\n");
     imprimir_arbol(raiz);
     printf("\n");
 
