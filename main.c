@@ -5,15 +5,6 @@
 // Línea para compilar: gcc main.c compressor.c -o main
 // Línea para ejecutar: ./main
 
-typedef struct frecuencias
-{
-    int frecuencia;
-    char letra;
-} fr;
-
-fr *calcularFrecuencias(int *total_out);
-void ordenarFrecuencias(fr *array, int total);
-
 fr *calcularFrecuencias(int *total_out)
 {
     int letra, total = 0, capacidad = 4;
@@ -78,7 +69,7 @@ void ordenarFrecuencias(fr *array, int total)
         int menor = i;
         for (int j = i + 1; j < total; j++)
         {
-            if ((array + j)->frecuencia > (array + menor)->frecuencia)
+            if ((array + j)->frecuencia < (array + menor)->frecuencia)
             {
                 menor = j;
             }
@@ -105,12 +96,13 @@ int main()
     }
 
     ordenarFrecuencias(tabla, total);
+    
+    nodo *raiz = crear_arbol(tabla, total);
+    printf("Recorrido inorder del arbol:\n");
+    imprimir_arbol(raiz);
+    printf("\n");
 
-    for (int i = 0; i < total; i++)
-    {
-        printf("%c: %d\n", tabla[i].letra, tabla[i].frecuencia);
-    }
-
+    liberar_arbol(raiz);
     free(tabla);
     return 0;
 }
