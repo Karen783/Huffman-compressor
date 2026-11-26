@@ -23,7 +23,7 @@ fr *calcularFrecuencias(int *total_out)
         int pos = -1;
         for (int i = 0; i < total; i++)
         {
-            if (array[i].letra == (char)letra)
+            if ((array + i)->letra == (char)letra)
             {
                 pos = i;
                 break;
@@ -32,13 +32,13 @@ fr *calcularFrecuencias(int *total_out)
 
         if (pos != -1)
         {
-            array[pos].frecuencia++;
+            (array + pos)->frecuencia++;
         }
         else
         {
             if (total == capacidad)
             {
-                capacidad += 3; // Aumentar el tamaño en 3:)
+                capacidad += 3; // Aumentar el tamaño en 3
                 fr *temp = realloc(array, capacidad * sizeof(fr));
                 if (temp == NULL)
                 {
@@ -49,8 +49,8 @@ fr *calcularFrecuencias(int *total_out)
                 }
                 array = temp;
             }
-            array[total].letra = (char)letra;
-            array[total].frecuencia = 1;
+            (array + total)->letra = (char)letra;
+            (array + total)->frecuencia = 1;
             total++;
         }
     }
@@ -78,9 +78,9 @@ void ordenarFrecuencias(fr *array, int total)
 
         if (menor != i)
         {
-            fr temp = array[i];
-            array[i] = array[menor];
-            array[menor] = temp;
+            fr temp = *(array + i);
+            *(array + i) = *(array + menor);
+            *(array + menor) = temp;
         }
     }
 }

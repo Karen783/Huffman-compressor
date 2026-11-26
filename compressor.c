@@ -31,12 +31,12 @@ int insertar(heap *h, nodo *n)
     {
         int padre = (i - 1) / 2;
         // Si el nodo es menor o igual que el ultimo elemento
-        if (h->datos[padre]->frecuencia <= h->datos[i]->frecuencia)
+        if ((*(h->datos + padre))->frecuencia <= (*(h->datos + i))->frecuencia)
             break;
 
-        nodo *temp = h->datos[padre];
-        h->datos[padre] = h->datos[i];
-        h->datos[i] = temp;
+        nodo *temp = *(h->datos + padre);
+        *(h->datos + padre) = *(h->datos + i);
+        *(h->datos + i) = temp;
         i = padre;
     }
     return 0;
@@ -101,9 +101,9 @@ nodo *extraer_minimo(heap *h)
         int der = 2 * i + 2;
 
         // Buscar el menor (puede ser el izq, el derecho, o el actual)
-        if (izq < h->total && h->datos[izq]->frecuencia < h->datos[menor]->frecuencia)
+        if (izq < h->total && (*(h->datos + izq))->frecuencia < (*(h->datos + menor))->frecuencia)
             menor = izq;
-        if (der < h->total && h->datos[der]->frecuencia < h->datos[menor]->frecuencia)
+        if (der < h->total && (*(h->datos + der))->frecuencia < (*(h->datos + menor))->frecuencia)
             menor = der;
 
         // Esto significa que el actual ya es el menor
@@ -111,9 +111,9 @@ nodo *extraer_minimo(heap *h)
             break;
 
         // Hacer swap para ordenarlo
-        nodo *temp = h->datos[i];
-        h->datos[i] = h->datos[menor];
-        h->datos[menor] = temp;
+        nodo *temp = *(h->datos + i);
+        *(h->datos + i) = *(h->datos + menor);
+        *(h->datos + menor) = temp;
         i = menor;
     }
     return minimo;
