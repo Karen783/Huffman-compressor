@@ -17,6 +17,12 @@ struct min_heap
     int capacidad; // cuántos caben
 };
 
+struct diccionario
+{
+    char key;
+    char *binario;
+};
+
 int insertar(heap *h, nodo *n)
 {
     if (h->total == h->capacidad)
@@ -163,7 +169,8 @@ void imprimir_arbol(nodo *n)
 {
     if (n == NULL)
         return;
-    printf("(%c:%d) ", n->letra, n->frecuencia);
+    if (n->izquierda == NULL && n->derecho == NULL)
+        printf("(%c:%d) ", n->letra, n->frecuencia);
     imprimir_arbol(n->izquierda);
     imprimir_arbol(n->derecho);
 }
@@ -175,4 +182,19 @@ void liberar_arbol(nodo *n)
     liberar_arbol(n->izquierda);
     liberar_arbol(n->derecho);
     free(n);
+}
+
+int recorrer(nodo *n, char *codigo, int profundidad, dic *tabla, int cuenta)
+{
+    if (n == NULL)
+        return cuenta;
+
+    if (n->izquierda == NULL && n->derecho == NULL)
+        return cuenta + 1;
+
+    codigo[profundidad] = '0';
+    cuenta = recorrer(n->izquierda, codigo, profundidad + 1, tabla, cuenta);
+    codigo[profundidad] = '1';
+    cuenta = recorrer(n->derecho, codigo, profundidad + 1, tabla, cuenta);
+    return cuenta;
 }

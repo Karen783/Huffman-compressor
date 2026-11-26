@@ -11,6 +11,10 @@ typedef struct frecuencias
     char letra;
 } fr;
 
+typedef struct diccionario dic;
+
+int recorrer(nodo *n, char *codigo, int profundidad, dic *tabla, int cuenta);
+
 nodo *crear_hoja(char letra, int frecuencia);
 
 nodo *crear_padre(nodo *izq, nodo *der);
