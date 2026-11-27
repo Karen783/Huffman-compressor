@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 struct pq_nodo
 {
@@ -120,16 +121,6 @@ nodo *extraer_minimo(heap *h)
     return minimo;
 }
 
-void imprimir_heap(heap *h)
-{
-    for (int i = 0; i < h->total; i++)
-    {
-        nodo *actual = *(h->datos + i);
-        printf("(%c:%d) -> ", actual->letra, actual->frecuencia);
-    }
-    printf("\n");
-}
-
 nodo *crear_arbol(fr *tabla, int total)
 {
     if (total == 0)
@@ -158,24 +149,6 @@ nodo *crear_arbol(fr *tabla, int total)
     free(h->datos);
     free(h);
     return raiz;
-}
-
-void imprimir_arbol(nodo *n)
-{
-    if (n == NULL)
-        return;
-    printf("(%c:%d) ", n->letra, n->frecuencia);
-    imprimir_arbol(n->izquierda);
-    imprimir_arbol(n->derecho);
-}
-
-void liberar_arbol(nodo *n)
-{
-    if (n == NULL)
-        return;
-    liberar_arbol(n->izquierda);
-    liberar_arbol(n->derecho);
-    free(n);
 }
 
 static void asignar_codigo(fr *tabla, int total, char letra, const char *codigo)
@@ -228,6 +201,76 @@ void generar_codigos(nodo *raiz, fr *tabla, int total)
     free(codigo);
 }
 
+static const char *buscar_codigo(const fr *tabla, int total, char c)
+{
+    for (int j = 0; j < total; j++)
+    {
+        if ((tabla + j)->letra == c)
+            return (tabla + j)->codigo_binario;
+    }
+    return NULL;
+}
+
+void generar_archivo_binario(const char *ruta, const char *oracion, const fr *tabla, int total)
+{
+    FILE *f = fopen(ruta, "wb");
+    if (f == NULL)
+        return;
+
+    unsigned char byte = 0;
+    int nbits = 0;
+    for (int i = 0; oracion[i] != '\0'; i++)
+    {
+        const char *codigo = buscar_codigo(tabla, total, oracion[i]);
+        if (codigo == NULL)
+        {
+            fclose(f);
+            return;
+        }
+        for (int k = 0; codigo[k] != '\0'; k++)
+        {
+            byte = (unsigned char)((byte << 1) | (codigo[k] - '0'));
+            nbits++;
+            if (nbits == 8)
+            {
+                fputc(byte, f);
+                byte = 0;
+                nbits = 0;
+            }
+        }
+    }
+
+    if (nbits > 0)
+    {
+        byte = (unsigned char)(byte << (8 - nbits));
+        fputc(byte, f);
+    }
+
+    fclose(f);
+}
+
+// ********* FUNCIONES PARA IMPRIMIR COSITAS *********//
+void imprimir_archivo_binario(const char *ruta)
+{
+    FILE *f = fopen(ruta, "rb");
+    if (f == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        return;
+    }
+
+    unsigned char byte;
+    while (fread(&byte, 1, 1, f) == 1)
+    {
+        for (int b = 7; b >= 0; b--)
+            printf("%d", (byte >> b) & 1);
+    }
+    printf("\n");
+
+    fclose(f);
+}
+
+
 void imprimir_tabla(fr *tabla, int total)
 {
     if (tabla == NULL)
@@ -240,6 +283,26 @@ void imprimir_tabla(fr *tabla, int total)
         printf("'%c'| frec: %d | bin: %s\n", c, (tabla + i)->frecuencia, bin);
     }
 }
+
+void imprimir_arbol(nodo *n)
+{
+    if (n == NULL)
+        return;
+    printf("(%c:%d) ", n->letra, n->frecuencia);
+    imprimir_arbol(n->izquierda);
+    imprimir_arbol(n->derecho);
+}
+
+void imprimir_heap(heap *h)
+{
+    for (int i = 0; i < h->total; i++)
+    {
+        nodo *actual = *(h->datos + i);
+        printf("(%c:%d) -> ", actual->letra, actual->frecuencia);
+    }
+    printf("\n");
+}
+// ********* FUNCIONES PARA LIBERAR MEMORIA *********//
 
 void liberar_tabla(fr *tabla, int total)
 {
@@ -254,4 +317,13 @@ void liberar_tabla(fr *tabla, int total)
         }
     }
     free(tabla);
+}
+
+void liberar_arbol(nodo *n)
+{
+    if (n == NULL)
+        return;
+    liberar_arbol(n->izquierda);
+    liberar_arbol(n->derecho);
+    free(n);
 }

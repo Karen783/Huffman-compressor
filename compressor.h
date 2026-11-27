@@ -36,5 +36,10 @@ void imprimir_tabla(fr *tabla, int total);
 
 void liberar_tabla(fr *tabla, int total);
 
-#endif
+static const char *buscar_codigo(const fr *tabla, int total, char c);
 
+void generar_archivo_binario(const char * ruta, const char *oracion, const fr *tabla, int total);
+
+void imprimir_archivo_binario();
+
+#endif

@@ -6,6 +6,7 @@
 // Línea para compilar: gcc main.c compressor.c -o main
 // Línea para ejecutar: ./main
 
+// size_t: tipo de entero sin signo para representar tamaños y cantidades de bytes
 char *leer_entrada(void)
 {
     size_t capacidad = 16;
@@ -19,7 +20,7 @@ char *leer_entrada(void)
     {
         if (longitud + 1 >= capacidad) // deja espacio para el '\0'
         {
-            capacidad += 2;
+            capacidad *= 2;
             char *temp = realloc(buffer, capacidad);
             if (temp == NULL)
             {
@@ -31,8 +32,13 @@ char *leer_entrada(void)
         *(buffer + longitud) = (char)c;
         longitud++;
     }
-
     *(buffer + longitud) = '\0';
+
+    // Recorte: ajustar el bloque al tamaño exacto (caracteres + '\0')
+    char *ajustado = realloc(buffer, longitud + 1);
+    if (ajustado != NULL)
+        buffer = ajustado;
+        
     return buffer;
 }
 
@@ -116,6 +122,8 @@ void ordenar_frecuencias(fr *array, int total)
 
 int main()
 {
+    // ADAPTAR RUTA 
+    const char* ruta = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_comprimido.bin";
 
     printf("Ingresa la oracion: ");
     const char *oracion = leer_entrada();
@@ -145,6 +153,11 @@ int main()
     generar_codigos(raiz, tabla, total);
     printf("--- Tabla de Huffman (Frecuencias y Codigos) ---\n");
     imprimir_tabla(tabla, total);
+
+    generar_archivo_binario(ruta, oracion, tabla, total);
+
+
+    imprimir_archivo_binario(ruta);
 
     liberar_arbol(raiz);
     liberar_tabla(tabla, total);
