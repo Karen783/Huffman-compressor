@@ -32,15 +32,13 @@ void liberar_arbol(nodo *n);
 
 void generar_codigos(nodo *raiz, fr *tabla, int total);
 
-void imprimir_tabla(fr *tabla, int total);
+void imprimir_tabla(const fr *tabla, int total);
 
 void liberar_tabla(fr *tabla, int total);
 
-static const char *buscar_codigo(const fr *tabla, int total, char c);
-
 void generar_archivo_binario(const char * ruta, const char *oracion, const fr *tabla, int total);
 
-void imprimir_archivo_binario();
+void imprimir_archivo_binario(const char *ruta);
 
 void descomprimir_archivo(const char * ruta_comprimido, const char * ruta_descomprimido, nodo *raiz);
 

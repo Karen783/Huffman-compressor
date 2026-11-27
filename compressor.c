@@ -222,17 +222,17 @@ void generar_archivo_binario(const char *ruta, const char *oracion, const fr *ta
 
     unsigned char byte = 0;
     int nbits = 0;
-    for (int i = 0; oracion[i] != '\0'; i++)
+    for (int i = 0; *(oracion + i) != '\0'; i++)
     {
-        const char *codigo = buscar_codigo(tabla, total, oracion[i]);
+        const char *codigo = buscar_codigo(tabla, total, *(oracion + i));
         if (codigo == NULL)
         {
             fclose(f);
             return;
         }
-        for (int k = 0; codigo[k] != '\0'; k++)
+        for (int k = 0; *(codigo + k) != '\0'; k++)
         {
-            byte = (unsigned char)((byte << 1) | (codigo[k] - '0'));
+            byte = (unsigned char)((byte << 1) | (*(codigo + k) - '0'));
             nbits++;
             if (nbits == 8)
             {
@@ -263,10 +263,11 @@ void descomprimir_archivo(const char *ruta_comprimido, const char *ruta_descompr
     }
 
     FILE *descomprimido = NULL;
-    descomprimido = fopen(ruta_descomprimido, "a");
+    descomprimido = fopen(ruta_descomprimido, "w");
     if (descomprimido == NULL)
     {
         printf("No se pudo abrir el archivo\n");
+        fclose(comprimido);
         return;
     }
 
@@ -276,7 +277,7 @@ void descomprimir_archivo(const char *ruta_comprimido, const char *ruta_descompr
 
     while (total > 0 && fread(&byte, 1, 1, comprimido) == 1)
     {
-        for (int b = 7; b >= 0; b--)
+        for (int b = 7; b >= 0 && total > 0; b--)
         {
             int bit = (byte >> b) & 1;
             if (bit == 0)
@@ -320,26 +321,79 @@ void imprimir_archivo_binario(const char *ruta)
     fclose(f);
 }
 
-void imprimir_tabla(fr *tabla, int total)
+void imprimir_tabla(const fr *tabla, int total)
 {
     if (tabla == NULL)
+    {
+        printf("Error con la tabla\n");
         return;
+    }
 
     for (int i = 0; i < total; i++)
     {
         char c = (tabla + i)->letra;
-        const char *bin = (tabla + i)->codigo_binario ? (tabla + i)->codigo_binario : "";
-        printf("'%c'| frec: %d | bin: %s\n", c, (tabla + i)->frecuencia, bin);
+        const char *bin = (tabla + i)->codigo_binario;
+
+        if (bin == NULL || *(bin) == '\0')
+            printf("'%c'| frec: %d\n", c, (tabla + i)->frecuencia);
+        else
+            printf("'%c'| frec: %d | bin: %s\n", c, (tabla + i)->frecuencia, bin);
     }
+}
+
+static void imprimir_arbol_recursivo(const char *prefijo, const nodo *n, int es_izq)
+{
+    if (n == NULL)
+        return;
+
+    printf("%s", prefijo);
+    printf("%s", es_izq ? "|-- " : "`-- ");
+
+    if (n->izquierda == NULL && n->derecho == NULL)
+    {
+        if (n->letra == ' ')
+            printf("[' ': %d]\n", n->frecuencia);
+        else
+            printf("['%c': %d]\n", n->letra, n->frecuencia);
+    }
+    else
+    {
+        printf("(  %d  )\n", n->frecuencia);
+    }
+
+    char nuevo_prefijo[256];
+    size_t len = strlen(prefijo);
+    if (len + 5 < sizeof(nuevo_prefijo))
+    {
+        strcpy(nuevo_prefijo, prefijo);
+        strcat(nuevo_prefijo, es_izq ? "|   " : "    ");
+    }
+    else
+    {
+        strcpy(nuevo_prefijo, prefijo);
+    }
+
+    imprimir_arbol_recursivo(nuevo_prefijo, n->izquierda, 1);
+    imprimir_arbol_recursivo(nuevo_prefijo, n->derecho, 0);
 }
 
 void imprimir_arbol(nodo *n)
 {
     if (n == NULL)
         return;
-    printf("(%c:%d) ", n->letra, n->frecuencia);
-    imprimir_arbol(n->izquierda);
-    imprimir_arbol(n->derecho);
+
+    if (n->izquierda == NULL && n->derecho == NULL)
+    {
+        if (n->letra == ' ')
+            printf("[' ': %d]\n", n->frecuencia);
+        else
+            printf("['%c': %d]\n", n->letra, n->frecuencia);
+        return;
+    }
+
+    printf("(*: %d)\n", n->frecuencia);
+    imprimir_arbol_recursivo("", n->izquierda, 1);
+    imprimir_arbol_recursivo("", n->derecho, 0);
 }
 
 void imprimir_heap(heap *h)

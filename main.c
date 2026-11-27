@@ -89,6 +89,7 @@ fr *crear_tabla_frecuencias(const char *oracion, int *total_out)
             }
             (array + total)->letra = letra;
             (array + total)->frecuencia = 1;
+            (array + total)->codigo_binario = NULL;
             total++;
         }
     }
@@ -126,7 +127,7 @@ int main()
     const char* ruta_comprimido = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_comprimido.bin";
     const char* ruta_descomprimido = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_descomprimido.txt";
 
-    printf("Ingresa la oracion: ");
+    printf("\nIngresa la oracion: ");
     const char *oracion = leer_entrada();
     if (oracion == NULL)
     {
@@ -143,28 +144,38 @@ int main()
         return -1;
     }
 
+
+    printf("\n---------- Tabla de frecuencias desordenadas ----------\n");
+    printf("\n");
+    imprimir_tabla(tabla, total);
+
+    printf("\n---------- Tabla de frecuencias ordenadas ----------\n");
+    printf("\n");
     ordenar_frecuencias(tabla, total);
+    imprimir_tabla(tabla, total);
 
     nodo *raiz = crear_arbol(tabla, total);
 
-    printf("Recorrido preorden del arbol:\n");
+    printf("\n---------- Arbol de Huffman ----------\n");
+    printf("\n");
     imprimir_arbol(raiz);
-    printf("\n\n");
 
     generar_codigos(raiz, tabla, total);
-    printf("--- Tabla de Huffman (Frecuencias y Codigos) ---\n");
+    printf("\n---------- Generacion de codigos binarios ----------\n");
+    printf("\n");
     imprimir_tabla(tabla, total);
 
     generar_archivo_binario(ruta_comprimido, oracion, tabla, total);
-
+    printf("\n---------- Generacion de cadena binaria ----------\n");
+    printf("\n");
     imprimir_archivo_binario(ruta_comprimido);
+    printf("\n");
 
     descomprimir_archivo(ruta_comprimido, ruta_descomprimido, raiz);
 
     liberar_arbol(raiz);
     liberar_tabla(tabla, total);
     free((char *)oracion);
-    free(tabla);
 
     return 0;
 }
