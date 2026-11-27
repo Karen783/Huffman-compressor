@@ -34,6 +34,8 @@ void generar_codigos(nodo *raiz, fr *tabla, int total);
 
 void imprimir_tabla(const fr *tabla, int total);
 
+void liberar_heap(heap *h);
+
 void liberar_tabla(fr *tabla, int total);
 
 void generar_archivo_binario(const char * ruta, const char *oracion, const fr *tabla, int total);

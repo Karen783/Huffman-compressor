@@ -127,10 +127,17 @@ nodo *crear_arbol(fr *tabla, int total)
         return NULL;
 
     heap *h = crear_heap(total);
+    if (h == NULL)
+        return NULL;
 
     for (int i = 0; i < total; i++)
     {
         nodo *hoja = crear_hoja((tabla + i)->letra, (tabla + i)->frecuencia);
+        if (hoja == NULL)
+        {
+            liberar_heap(h);
+            return NULL;
+        }
         insertar(h, hoja);
     }
 
@@ -141,7 +148,12 @@ nodo *crear_arbol(fr *tabla, int total)
         nodo *der = extraer_minimo(h);
         nodo *padre = crear_padre(izq, der);
         if (padre == NULL)
-            break;
+        {
+            liberar_arbol(izq);
+            liberar_arbol(der);
+            liberar_heap(h);
+            return NULL;
+        }
         insertar(h, padre);
     }
 
@@ -429,4 +441,19 @@ void liberar_arbol(nodo *n)
     liberar_arbol(n->izquierda);
     liberar_arbol(n->derecho);
     free(n);
+}
+
+void liberar_heap(heap *h)
+{
+    if (h == NULL)
+        return;
+    if (h->datos != NULL)
+    {
+        for (int i = 0; i < h->total; i++)
+        {
+            liberar_arbol(*(h->datos + i));
+        }
+        free(h->datos);
+    }
+    free(h);
 }

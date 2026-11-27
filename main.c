@@ -141,9 +141,9 @@ int main()
     if (tabla == NULL && total > 0)
     {
         printf("Error al asignar memoria.\n");
+        free((char *)oracion);
         return -1;
     }
-
 
     printf("\n---------- Tabla de frecuencias desordenadas ----------\n");
     printf("\n");
