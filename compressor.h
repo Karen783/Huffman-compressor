@@ -42,4 +42,6 @@ void generar_archivo_binario(const char * ruta, const char *oracion, const fr *t
 
 void imprimir_archivo_binario();
 
+void descomprimir_archivo(const char * ruta_comprimido, const char * ruta_descomprimido, nodo *raiz);
+
 #endif

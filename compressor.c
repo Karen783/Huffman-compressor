@@ -215,7 +215,10 @@ void generar_archivo_binario(const char *ruta, const char *oracion, const fr *ta
 {
     FILE *f = fopen(ruta, "wb");
     if (f == NULL)
+    {
+        printf("No se pudo abrir el archivo");
         return;
+    }
 
     unsigned char byte = 0;
     int nbits = 0;
@@ -249,7 +252,54 @@ void generar_archivo_binario(const char *ruta, const char *oracion, const fr *ta
     fclose(f);
 }
 
+void descomprimir_archivo(const char *ruta_comprimido, const char *ruta_descomprimido, nodo *raiz)
+{
+    FILE *comprimido = NULL;
+    comprimido = fopen(ruta_comprimido, "rb");
+    if (comprimido == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        return;
+    }
+
+    FILE *descomprimido = NULL;
+    descomprimido = fopen(ruta_descomprimido, "a");
+    if (descomprimido == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        return;
+    }
+
+    int total = raiz->frecuencia;
+    nodo *actual = raiz;
+    unsigned char byte;
+
+    while (total > 0 && fread(&byte, 1, 1, comprimido) == 1)
+    {
+        for (int b = 7; b >= 0; b--)
+        {
+            int bit = (byte >> b) & 1;
+            if (bit == 0)
+                actual = actual->izquierda;
+            else
+                actual = actual->derecho;
+
+            if (actual->derecho == NULL && actual->izquierda == NULL)
+            {
+                fputc(actual->letra, descomprimido);
+                actual = raiz;
+                total--;
+            }
+        }
+    }
+    fputc('\n', descomprimido);
+
+    fclose(descomprimido);
+    fclose(comprimido);
+}
+
 // ********* FUNCIONES PARA IMPRIMIR COSITAS *********//
+
 void imprimir_archivo_binario(const char *ruta)
 {
     FILE *f = fopen(ruta, "rb");
@@ -269,7 +319,6 @@ void imprimir_archivo_binario(const char *ruta)
 
     fclose(f);
 }
-
 
 void imprimir_tabla(fr *tabla, int total)
 {

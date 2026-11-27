@@ -122,8 +122,9 @@ void ordenar_frecuencias(fr *array, int total)
 
 int main()
 {
-    // ADAPTAR RUTA 
-    const char* ruta = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_comprimido.bin";
+    // ADAPTAR A TU RUTA 
+    const char* ruta_comprimido = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_comprimido.bin";
+    const char* ruta_descomprimido = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_descomprimido.txt";
 
     printf("Ingresa la oracion: ");
     const char *oracion = leer_entrada();
@@ -154,10 +155,11 @@ int main()
     printf("--- Tabla de Huffman (Frecuencias y Codigos) ---\n");
     imprimir_tabla(tabla, total);
 
-    generar_archivo_binario(ruta, oracion, tabla, total);
+    generar_archivo_binario(ruta_comprimido, oracion, tabla, total);
 
+    imprimir_archivo_binario(ruta_comprimido);
 
-    imprimir_archivo_binario(ruta);
+    descomprimir_archivo(ruta_comprimido, ruta_descomprimido, raiz);
 
     liberar_arbol(raiz);
     liberar_tabla(tabla, total);
