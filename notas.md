@@ -1,6 +1,8 @@
 - 1. Tabla de frecuencias
 - 2. Ordenar las frecuencias
 - 3. Construir arbol (las colas de prioridad pueden ser utiles)
-- 4. Crear diccionario de codigos y letras (left = 0, right = 1)
+- 4. Crear diccionario de codigos y letras
 - 5. Comprimir (leer la cadena original y sustituir los caracteres por su equivalente binario)
 - 6. Descomprimir (recorrer el arbol, cuando una hoja no tiene hijos, esa es la letra que se debe poner)
+
+Nota, para que el programa funciona correcyamente debes modificar la ruta de tus archivos en el main

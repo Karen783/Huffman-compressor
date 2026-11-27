@@ -124,8 +124,8 @@ void ordenar_frecuencias(fr *array, int total)
 int main()
 {
     // ADAPTAR A TU RUTA 
-    const char* ruta_comprimido = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_comprimido.bin";
-    const char* ruta_descomprimido = "C:\\Users\\navar\\OneDrive\\Documentos\\ITESO\\SEMESTRE 3\\Estructura de Datos\\Huffman-compressor\\archivo_descomprimido.txt";
+    const char* ruta_comprimido = "Tu ruta.bin";
+    const char* ruta_descomprimido = "Tu ruta.txt";
 
     printf("\nIngresa la oracion: ");
     const char *oracion = leer_entrada();
